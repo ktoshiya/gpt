@@ -9,6 +9,7 @@ const Page = () => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { currentUser } = useAuthContext();
+  const isAdmin = currentUser?.email === "admin@example.com";
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -57,7 +58,7 @@ const Page = () => {
             </button>
           </form>
           {message && <p>{message}</p>}
-          <Navigation />
+          {isAdmin && <Navigation />}
           {isLoading && <Loading />}
         </div>
       </div>

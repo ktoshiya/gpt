@@ -16,6 +16,7 @@ const Page: React.FC = () => {
   const [inputText, setInputText] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { currentUser } = useAuthContext();
+  const isAdmin = currentUser?.email === "admin@example.com";
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "system",
@@ -100,7 +101,7 @@ const Page: React.FC = () => {
               <AiOutlineSend size={10} /> {/* アイコンを表示 */}
             </button>
           </form>
-          <Navigation />
+          {isAdmin && <Navigation />}
         </div>
       </div>
       {isLoading && <Loading />}
