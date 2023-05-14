@@ -5,10 +5,12 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { firebaseAuth } from "@/utils/firebaseClient";
 import { useRouter } from "next/router";
 import { useAuthContext } from "../AuthContext";
+import Loading from "@/components/Loading";
 
 const Page: React.FC = () => {
   const router = useRouter();
   const { currentUser } = useAuthContext();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,12 +24,15 @@ const Page: React.FC = () => {
   const login = async () => {
     if (!email) return;
     if (!password) return;
+    setIsLoading(true);
 
     try {
       await signInWithEmailAndPassword(firebaseAuth, email, password);
       router.push("/");
     } catch (error) {
       console.error("Login error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -68,7 +73,9 @@ const Page: React.FC = () => {
           </div>
         </div>
       </div>
+      {isLoading && <Loading />}
     </div>
+
   );
 };
 

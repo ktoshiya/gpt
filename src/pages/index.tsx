@@ -101,7 +101,7 @@ const Page: React.FC = () => {
               <AiOutlineSend size={10} /> {/* アイコンを表示 */}
             </button>
           </form>
-          {isAdmin && <Navigation />}
+          <Navigation />
         </div>
       </div>
       {isLoading && <Loading />}
