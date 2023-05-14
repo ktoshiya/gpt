@@ -11,6 +11,7 @@ import { TextLoader } from "langchain/document_loaders/fs/text";
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { PuppeteerWebBaseLoader } from "langchain/document_loaders/web/puppeteer";
+import { Document } from "langchain/document";
 
 const client = new PineconeClient();
 
@@ -39,7 +40,7 @@ export const webLoader = async (url: string) => {
 
 // fileから取得する場合
 export const filesLoader = async () => {
-  const loader = new DirectoryLoader("file", {
+  const loader = new DirectoryLoader("files", {
     ".txt": (path) => new TextLoader(path),
     ".html": (path) => new TextLoader(path),
     ".pdf": (path) => new PDFLoader(path),
@@ -49,14 +50,15 @@ export const filesLoader = async () => {
 };
 
 // ファイルを読み込む場合
-export const fromDocuments = async () => {
-  const result = await filesLoader();
+export const fromDocuments = async (
+  results: Document<Record<string, any>>[]
+) => {
   const textSplitter = new RecursiveCharacterTextSplitter({
     chunkSize: 800,
     chunkOverlap: 200,
   });
 
-  const documents = await textSplitter.splitDocuments(result);
+  const documents = await textSplitter.splitDocuments(results);
 
   await client.init({
     apiKey: process.env.PINECONE_API_KEY as string,
@@ -77,4 +79,16 @@ export const fetchChain = async (vectorStore: PineconeStore) => {
     k: 5,
     returnSourceDocuments: true,
   });
+};
+
+export const setDocument = async (title: string, body: string) => {
+  const document = new Document({
+    metadata: {
+      title: title,
+      fetched_at: new Date().toISOString(),
+    },
+    pageContent: body,
+  });
+
+  return document;
 };

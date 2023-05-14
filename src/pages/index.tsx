@@ -1,12 +1,57 @@
 "use client";
-import { useMessage } from "@/hooks/useMessage";
+import { useState, FormEvent, ChangeEvent } from "react";
 import React, { useEffect, useRef } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import { AiOutlineSend } from "react-icons/ai"; // 送信アイコンのインポート
+import Loading from "@/components/Loading";
+import Navigation from "@/components/Navigation";
 
-const Home: React.FC = () => {
-  const { inputText, messages, isLoading, handleSubmit, handleChange } =
-    useMessage();
+interface Message {
+  role: string;
+  content: string;
+}
+
+const Page: React.FC = () => {
+  const [inputText, setInputText] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      role: "system",
+      content:
+        "なにか質問してみてください。質問が理解されにくい場合は、言い換えや追加情報を提供してください。",
+    },
+  ]);
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    setIsLoading(true);
+
+    const userMessage: Message = { role: "user", content: inputText };
+    setMessages((prevMessages) => [...prevMessages, userMessage]);
+
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ text: inputText, messages }),
+    });
+
+    const data = await response.json();
+
+    const assistantMessage: Message = {
+      role: "assistant",
+      content: data.data,
+    };
+    setMessages((prevMessages) => [...prevMessages, assistantMessage]);
+
+    setInputText("");
+    setIsLoading(false);
+  };
+
+  const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    setInputText(event.target.value);
+  };
 
   const chatBoxRef = useRef<HTMLDivElement>(null);
 
@@ -22,7 +67,7 @@ const Home: React.FC = () => {
       <h1 className="text-4xl font-bold mb-8">チャットボット</h1>
       <div className="w-full max-w-2xl">
         <div className="bg-white shadow-md rounded p-6">
-          <div ref={chatBoxRef} className="h-2/3 mb-4 overflow-y-auto">
+          <div ref={chatBoxRef} className="h-96 mb-4 overflow-y-auto">
             {messages.map((message, index) => (
               <div
                 key={index}
@@ -37,7 +82,7 @@ const Home: React.FC = () => {
             ))}
           </div>
 
-          <form onSubmit={handleSubmit} className="flex relative">
+          <form onSubmit={handleSubmit} className="flex relative ">
             <TextareaAutosize
               value={inputText}
               onChange={handleChange}
@@ -52,15 +97,12 @@ const Home: React.FC = () => {
               <AiOutlineSend size={10} /> {/* アイコンを表示 */}
             </button>
           </form>
+          <Navigation />
         </div>
       </div>
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="w-16 h-16 border-t-4 border-b-4 border-indigo-500 animate-spin"></div>
-        </div>
-      )}
+      {isLoading && <Loading />}
     </div>
   );
 };
 
-export default Home;
+export default Page;
