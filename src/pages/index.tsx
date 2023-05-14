@@ -12,18 +12,20 @@ interface Message {
   content: string;
 }
 
+const initialMessages: Message[] = [
+  {
+    role: "system",
+    content:
+      "なにか質問してみてください。質問が理解されにくい場合は、言い換えや追加情報を提供してください。",
+  },
+];
+
 const Page: React.FC = () => {
   const [inputText, setInputText] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { currentUser } = useAuthContext();
   const isAdmin = currentUser?.email === "admin@example.com";
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: "system",
-      content:
-        "なにか質問してみてください。質問が理解されにくい場合は、言い換えや追加情報を提供してください。",
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -67,11 +69,15 @@ const Page: React.FC = () => {
   }, [messages]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-100">
+    <div className="flex flex-col flex-grow items-center h-screen p-4 bg-gray-100">
       <h1 className="text-4xl font-bold mb-8">チャットボット</h1>
-      <div className="w-full max-w-2xl">
+      <div className="w-full max-w-2xl ">
         <div className="bg-white shadow-md rounded p-6">
-          <div ref={chatBoxRef} className="h-96 mb-4 overflow-y-auto">
+          <div
+            ref={chatBoxRef}
+            className="flex-grow mb-4 overflow-y-auto"
+            style={{ height: "calc(100vh - 20rem)" }}
+          >
             {messages.map((message, index) => (
               <div
                 key={index}
