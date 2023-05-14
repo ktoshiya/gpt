@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import formidable, { IncomingForm } from "formidable";
 import { filesLoader, fromDocuments } from "@/utils/langchain";
+import { RunMiddleware } from "./chat";
 
 const uploadDir = path.join(process.cwd(), "files");
 
@@ -14,6 +15,7 @@ export const config = {
 
 const fileUploadHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
+    await RunMiddleware(req, res);
     if (req.method !== "POST") {
       res.status(405).json({ message: "Method not allowed. Use POST." });
     }
