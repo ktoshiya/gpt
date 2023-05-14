@@ -69,7 +69,10 @@ export const fromDocuments = async () => {
 };
 
 export const fetchChain = async (vectorStore: PineconeStore) => {
-  const model = new ChatOpenAI({ modelName: "gpt-3.5-turbo" });
+  const model = new ChatOpenAI({
+    modelName: "gpt-3.5-turbo",
+    openAIApiKey: process.env.OPENAI_API_KEY,
+  });
   return VectorDBQAChain.fromLLM(model, vectorStore, {
     k: 5,
     returnSourceDocuments: true,
