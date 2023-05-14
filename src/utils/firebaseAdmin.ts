@@ -1,9 +1,12 @@
 import * as admin from "firebase-admin";
-import { applicationDefault } from "firebase-admin/app";
 
 if (!admin.apps.length) {
   admin.initializeApp({
-    credential: applicationDefault(),
+    credential: admin.credential.cert({
+      projectId: process.env.FSA_PROJECT_ID,
+      privateKey: process.env.FSA_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      clientEmail: process.env.FSA_CLIENT_EMAIL,
+    }),
   });
 }
 
