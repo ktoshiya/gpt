@@ -11,11 +11,14 @@ const Page = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setMessage("")
     setIsLoading(true);
 
     try {
       const response = await axios.post("/api/text_load", { title, body });
       setMessage(response.data.message);
+      setTitle("");
+      setBody("");
     } catch (error) {
       console.error(error);
       setMessage("Error loading URL content.");

@@ -10,6 +10,7 @@ const Page = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setMessage("");
     setIsLoading(true);
 
     if (file) {
@@ -23,6 +24,7 @@ const Page = () => {
           },
         });
         setMessage(response.data.message);
+        setFile(null);
       } catch (error) {
         console.error(error);
         setMessage("Error uploading file.");
