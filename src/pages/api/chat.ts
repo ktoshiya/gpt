@@ -17,7 +17,6 @@ export const RunMiddleware = async (
   }
 
   const decodedToken = await verifyIdToken(token);
-
   if (!decodedToken) {
     res.status(401).json({ message: "Unauthorized" });
     return;

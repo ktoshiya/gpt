@@ -2,20 +2,31 @@ import { useState } from "react";
 import axios from "axios";
 import Loading from "@/components/Loading";
 import Navigation from "@/components/Navigation";
+import { useAuthContext } from "../AuthContext";
 
 const Page = () => {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { currentUser } = useAuthContext();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setMessage("")
+    setMessage("");
     setIsLoading(true);
 
     try {
-      const response = await axios.post("/api/text_load", { title, body });
+      const response = await axios.post(
+        "/api/text_load",
+        { title, body },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${await currentUser?.getIdToken()}`,
+          },
+        }
+      );
       setMessage(response.data.message);
       setTitle("");
       setBody("");

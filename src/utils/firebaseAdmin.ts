@@ -1,12 +1,15 @@
-import { initializeApp, cert, getApps } from "firebase-admin/app";
-import { getAuth } from "firebase-admin/auth";
+import * as admin from "firebase-admin";
+import { applicationDefault } from "firebase-admin/app";
 
-const app = initializeApp();
-const auth = getAuth(app);
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: applicationDefault(),
+  });
+}
 
 export async function verifyIdToken(token: string) {
   try {
-    const decodedToken = await auth.verifyIdToken(token);
+    const decodedToken = await admin.auth().verifyIdToken(token);
     return decodedToken;
   } catch (error) {
     console.error("Error verifying ID token:", error);

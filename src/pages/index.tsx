@@ -5,6 +5,7 @@ import TextareaAutosize from "react-textarea-autosize";
 import { AiOutlineSend } from "react-icons/ai"; // 送信アイコンのインポート
 import Loading from "@/components/Loading";
 import Navigation from "@/components/Navigation";
+import { useAuthContext } from "./AuthContext";
 
 interface Message {
   role: string;
@@ -14,6 +15,7 @@ interface Message {
 const Page: React.FC = () => {
   const [inputText, setInputText] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { currentUser } = useAuthContext();
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "system",
@@ -33,6 +35,7 @@ const Page: React.FC = () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${await currentUser?.getIdToken()}`,
       },
       body: JSON.stringify({ text: inputText, messages }),
     });

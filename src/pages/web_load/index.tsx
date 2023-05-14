@@ -2,11 +2,13 @@ import { useState } from "react";
 import axios from "axios";
 import Loading from "@/components/Loading";
 import Navigation from "@/components/Navigation";
+import { useAuthContext } from "../AuthContext";
 
 const Page = () => {
   const [url, setUrl] = useState("");
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { currentUser } = useAuthContext();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -14,7 +16,16 @@ const Page = () => {
     setMessage("");
 
     try {
-      const response = await axios.post("/api/web_load", { url });
+      const response = await axios.post(
+        "/api/web_load",
+        { url },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${await currentUser?.getIdToken()}`,
+          },
+        }
+      );
       setMessage(response.data.message);
       setUrl("");
     } catch (error) {

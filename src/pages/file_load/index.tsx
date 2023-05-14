@@ -2,11 +2,13 @@ import { useState } from "react";
 import axios from "axios";
 import Loading from "@/components/Loading";
 import Navigation from "@/components/Navigation";
+import { useAuthContext } from "../AuthContext";
 
 const Page = () => {
   const [file, setFile] = useState<File | null>(null);
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { currentUser } = useAuthContext();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -21,6 +23,7 @@ const Page = () => {
         const response = await axios.post("/api/file_load", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${await currentUser?.getIdToken()}`,
           },
         });
         setMessage(response.data.message);
